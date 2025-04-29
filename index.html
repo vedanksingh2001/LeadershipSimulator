@@ -345,7 +345,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.0/dist/confetti.browser.min.js"></script>
 
- <script>
+<script>
   // Set the video playback speed to slower (e.g., 0.5 for half speed)
   const backgroundVideo = document.querySelector('.background-video');
   backgroundVideo.playbackRate = 0.5; // Slow down the video to half speed
@@ -354,6 +354,8 @@
   let currentQuestion = 0;
   const totalQuestions = 5; // Change based on total number of questions
   const questionContainers = document.querySelectorAll('.question-container');
+  const nextButtons = document.querySelectorAll('[id^="next"]');
+  const submitButton = document.querySelector('button[type="submit"]');
 
   // Progress bar update function
   function updateProgressBar() {
@@ -361,6 +363,25 @@
     progressBar.style.width = `${progress}%`;
   }
 
+  // Event listener to enable the "Next" button when a user selects an answer
+  quizForm.addEventListener('change', (event) => {
+    const questionNumber = parseInt(event.target.name.substring(1));
+    const nextButton = document.getElementById(`next${questionNumber}`);
+    const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
+    const isAnswered = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
+
+    // Enable the "Next" button if an answer is selected
+    if (nextButton) {
+      nextButton.disabled = !isAnswered;
+    }
+
+    // Enable Submit button on last question
+    if (questionNumber === totalQuestions && submitButton) {
+      submitButton.disabled = !isAnswered;
+    }
+  });
+
+  // Function to show a question
   function showQuestion(index) {
     questionContainers.forEach((container, i) => {
       container.classList.remove('active');
@@ -371,6 +392,7 @@
     updateProgressBar();
   }
 
+  // Function to move to the next question
   function nextQuestion(questionNumber) {
     const currentQuestionIndex = questionNumber - 1;
     const nextIndex = currentQuestionIndex + 1;
@@ -387,6 +409,7 @@
     }
   }
 
+  // Function to go to the previous question
   function prevQuestion(questionNumber) {
     const prevIndex = questionNumber - 2;
     if (prevIndex >= 0) {
@@ -395,17 +418,18 @@
     }
   }
 
-  // Trigger confetti when quiz is completed
+  // Function to trigger confetti when the quiz is completed
   function completeQuiz() {
     confetti(); // Triggers confetti on completion
   }
 
+  // When the user submits the quiz
   quizForm.addEventListener('submit', function (e) {
     e.preventDefault();
     completeQuiz();
   });
 
-  // Initial display
+  // Initial display of the first question
   showQuestion(currentQuestion);
 
   // Firebase config
@@ -422,71 +446,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  const quizForm = document.getElementById('quiz-form');
-  const questionContainers = document.querySelectorAll('.question-container');
-  const thankYouDiv = document.getElementById('thank-you');
-  let currentQuestion = 0;
-  const totalQuestions = questionContainers.length;
-  const nextButtons = document.querySelectorAll('[id^="next"]');
-  const submitButton = quizForm.querySelector('button[type="submit"]');
-
-  function showQuestion(index) {
-    questionContainers.forEach((container, i) => {
-      container.classList.remove('active');
-      if (i === index) {
-        container.classList.add('active');
-      }
-    });
-    // Disable next/submit button when a new question is shown
-    if (index < totalQuestions - 1) {
-      nextButtons[index].disabled = true;
-    } else if (index === totalQuestions - 1) {
-      submitButton.disabled = true;
-    }
-  }
-
-  function nextQuestion(questionNumber) {
-    const currentQuestionIndex = questionNumber - 1;
-    const nextIndex = currentQuestionIndex + 1;
-    const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
-    const selectedOption = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
-
-    if (selectedOption) {
-      if (nextIndex < totalQuestions) {
-        currentQuestion = nextIndex;
-        showQuestion(currentQuestion);
-      }
-    } else {
-      alert("Please select an answer before proceeding.");
-    }
-  }
-
-  function prevQuestion(questionNumber) {
-    const prevIndex = questionNumber - 2;
-    if (prevIndex >= 0) {
-      currentQuestion = prevIndex;
-      showQuestion(currentQuestion);
-    }
-  }
-
-  // Enable next/submit button when an option is selected
-  quizForm.addEventListener('change', (event) => {
-    const questionNumber = parseInt(event.target.name.substring(1));
-    const nextButton = document.getElementById(`next${questionNumber}`);
-    const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
-    const isAnswered = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
-
-    if (nextButton) {
-      nextButton.disabled = !isAnswered;
-    }
-    if (questionNumber === totalQuestions && submitButton) {
-      submitButton.disabled = !isAnswered;
-    }
-  });
-
-  // Initial display
-  showQuestion(currentQuestion);
-
+  // Submit quiz responses to Firebase
   quizForm.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -504,17 +464,17 @@
       }
     });
 
+    // Save responses to Firestore
     db.collection('quiz_responses').add(formData)
       .then(() => {
         quizForm.style.display = 'none';
-        thankYouDiv.style.display = 'block';
+        document.getElementById('thank-you').style.display = 'block';
       })
       .catch(error => {
         console.error("Error saving response: ", error);
       });
   });
 </script>
-
 </body>
 
 </html>
