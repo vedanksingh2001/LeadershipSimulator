@@ -466,14 +466,17 @@ Engagement and collaboration with Arjun are steadily declining.
         }
       });
 
-      db.collection('quiz_responses').add(formData)
-        .then(() => {
-          quizForm.style.display = 'none';
-          thankYouDiv.style.display = 'block';
-        })
-        .catch(error => {
-          console.error("Error saving response: ", error);
-        });
+      db.collection('quiz_responses').add({
+  responses: formData,
+  timestamp: firebase.firestore.FieldValue.serverTimestamp()
+})
+.then(() => {
+  quizForm.style.display = 'none';
+  thankYouDiv.style.display = 'block';
+})
+.catch(error => {
+  console.error("Error saving response: ", error);
+});
     });
   </script>
 
