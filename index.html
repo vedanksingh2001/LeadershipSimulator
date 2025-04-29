@@ -8,68 +8,47 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
   <style>
-    /* Full-screen background video */
-    body,
-    html {
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
+      background: linear-gradient(135deg, #f4f6f8, #e9ecef);
+      /* Light neutral gradient background */
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #212529;
+      /* Dark neutral text color */
+      overflow: auto;
     }
 
-    .background-video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -1;
-      filter: blur(3px);
-    }
-
-    /* Center content */
     .quiz-container {
-      background-color: rgba(255, 255, 255, 0.85);
+      background-color: rgba(255, 255, 255, 0.95);
+      /* Slightly more opaque white container */
       padding: 40px;
       border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       width: 90%;
-      max-width: 800px;
+      max-width: 700px;
       text-align: left;
       color: #212529;
-      backdrop-filter: blur(7px);
-      margin: 0 auto;
     }
 
     h1 {
       color: #00c48d;
+      /* LambdaTest primary green for the main title */
       text-align: center;
       margin-bottom: 30px;
-      font-size: 2.5em;
       animation: fadeInDown 1s ease-in-out;
     }
 
     h3 {
       color: #5444f2;
+      /* LambdaTest secondary purple for question headings */
       margin-bottom: 15px;
-      font-size: 1.5em;
-    }
-  .progress-container {
-      position: absolute;
-      top: 10px;
-      left: 0;
-      right: 0;
-      height: 5px;
-      background: #ddd;
     }
 
-    .progress-bar {
-      height: 100%;
-      width: 0;
-      background-color: #5444f2;
-    }
-    
     .scenario-image {
       text-align: center;
       margin-bottom: 25px;
@@ -100,19 +79,16 @@
       margin-bottom: 25px;
       padding: 20px;
       border: 1px solid #00c48d;
+      /* LambdaTest primary green for question border */
       border-radius: 10px;
       background-color: #f4f6f8;
+      /* Light neutral background for question area */
       color: #212529;
-      transition: all 0.3s ease-in-out;
-    }
-
-    .question:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     }
 
     p {
       color: #495057;
+      /* Slightly darker neutral text for paragraphs */
       margin-bottom: 15px;
       line-height: 1.7;
     }
@@ -129,6 +105,7 @@
 
     label:hover {
       background-color: #e9ecef;
+      /* Slightly darker neutral hover on labels */
     }
 
     input[type="radio"] {
@@ -143,6 +120,7 @@
 
     button {
       background-color: #5444f2;
+      /* LambdaTest secondary purple for buttons */
       color: white;
       padding: 12px 25px;
       border: none;
@@ -155,6 +133,7 @@
 
     button:hover {
       background-color: #4033b8;
+      /* Darker shade of LambdaTest purple on hover */
       transform: scale(1.05);
     }
 
@@ -168,6 +147,7 @@
       text-align: center;
       display: none;
       color: #00c48d;
+      /* LambdaTest primary green for thank you message */
       margin-top: 40px;
       font-size: 22px;
       animation: fadeIn 0.6s ease-in-out;
@@ -211,17 +191,7 @@
 </head>
 
 <body>
-  <!-- Background video -->
-  <video class="background-video" autoplay muted loop>
-    <source src="freepik__background-deep-black-space-background-with-subtle__7402.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
   <div class="quiz-container">
-    <!-- Progress bar -->
-    <div class="progress-container">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
-
     <h1>Leadership Personality Quiz</h1>
     <form id="quiz-form">
 
@@ -243,7 +213,7 @@
             We can lighten your load for now—and talk weekly to recalibrate.”</label>
         </div>
         <div class="controls">
-          <button type="button" id="next1" onclick="nextQuestion(1)" enabled>Next</button>
+          <button type="button" id="next1" onclick="nextQuestion(1)" disabled>Next</button>
         </div>
       </div>
 
@@ -265,7 +235,7 @@
         </div>
         <div class="controls">
           <button type="button" class="prev" data-current="2" data-next="1" onclick="prevQuestion(2)">Previous</button>
-          <button type="button" id="next2" onclick="nextQuestion(2)" enabled>Next</button>
+          <button type="button" id="next2" onclick="nextQuestion(2)" disabled>Next</button>
         </div>
       </div>
 
@@ -287,7 +257,7 @@
         </div>
         <div class="controls">
           <button type="button" class="prev" data-current="3" data-next="2" onclick="prevQuestion(3)">Previous</button>
-          <button type="button" id="next3" onclick="nextQuestion(3)" enabled>Next</button>
+          <button type="button" id="next3" onclick="nextQuestion(3)" disabled>Next</button>
         </div>
       </div>
 
@@ -309,7 +279,7 @@
         </div>
         <div class="controls">
           <button type="button" class="prev" data-current="4" data-next="3" onclick="prevQuestion(4)">Previous</button>
-          <button type="button" id="next4" onclick="nextQuestion(4)" enabled>Next</button>
+          <button type="button" id="next4" onclick="nextQuestion(4)" disabled>Next</button>
         </div>
       </div>
 
@@ -331,150 +301,124 @@
         </div>
         <div class="controls">
           <button type="button" class="prev" data-current="5" data-next="4" onclick="prevQuestion(5)">Previous</button>
-          <button type="submit" enabled>Submit</button>
+          <button type="submit" disabled>Submit</button>
         </div>
       </div>
 
     </form>
-   <div id="thank-you">
-        <h2>Thank you for playing!</h2>
-        <div id="confetti"></div>
-      </div>
-    </form>
+    <div id="thank-you">
+      <h2>Thank you for playing!</h2>
+    </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.0/dist/confetti.browser.min.js"></script>
+  <script>
+    // Your Firebase config here
+    const firebaseConfig = {
+      apiKey: "AIzaSyDETuFmpE616V5YDOu4iPlxkn-53V2XJpg",
+      authDomain: "leadershipquiz-48036.firebaseapp.com",
+      projectId: "leadershipquiz-48036",
+      storageBucket: "leadershipquiz-48036.firebasestorage.app",
+      messagingSenderId: "606740825362",
+      appId: "1:606740825362:web:d8516fd6a13d88f5175fcb"
+    };
 
-<script>
-  // Set the video playback speed to slower (e.g., 0.5 for half speed)
-  const backgroundVideo = document.querySelector('.background-video');
-  backgroundVideo.playbackRate = 0.5; // Slow down the video to half speed
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  const progressBar = document.getElementById('progress-bar');
-  let currentQuestion = 0;
-  const totalQuestions = 5; // Change based on total number of questions
-  const questionContainers = document.querySelectorAll('.question-container');
-  const nextButtons = document.querySelectorAll('[id^="next"]');
-  const submitButton = document.querySelector('button[type="submit"]');
+    const quizForm = document.getElementById('quiz-form');
+    const questionContainers = document.querySelectorAll('.question-container');
+    const thankYouDiv = document.getElementById('thank-you');
+    let currentQuestion = 0;
+    const totalQuestions = questionContainers.length;
+    const nextButtons = document.querySelectorAll('[id^="next"]');
+    const submitButton = quizForm.querySelector('button[type="submit"]');
 
-  // Progress bar update function
-  function updateProgressBar() {
-    const progress = ((currentQuestion + 1) / totalQuestions) * 100;
-    progressBar.style.width = `${progress}%`;
-  }
-
-  // Event listener to enable the "Next" button when a user selects an answer
-  quizForm.addEventListener('change', (event) => {
-    const questionNumber = parseInt(event.target.name.substring(1));
-    const nextButton = document.getElementById(`next${questionNumber}`);
-    const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
-    const isAnswered = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
-
-    // Enable the "Next" button if an answer is selected
-    if (nextButton) {
-      nextButton.disabled = !isAnswered;
-    }
-
-    // Enable Submit button on last question
-    if (questionNumber === totalQuestions && submitButton) {
-      submitButton.disabled = !isAnswered;
-    }
-  });
-
-  // Function to show a question
-  function showQuestion(index) {
-    questionContainers.forEach((container, i) => {
-      container.classList.remove('active');
-      if (i === index) {
-        container.classList.add('active');
+    function showQuestion(index) {
+      questionContainers.forEach((container, i) => {
+        container.classList.remove('active');
+        if (i === index) {
+          container.classList.add('active');
+        }
+      });
+      // Disable next/submit button when a new question is shown
+      if (index < totalQuestions - 1) {
+        nextButtons[index].disabled = true;
+      } else if (index === totalQuestions - 1) {
+        submitButton.disabled = true;
       }
-    });
-    updateProgressBar();
-  }
+    }
 
-  // Function to move to the next question
-  function nextQuestion(questionNumber) {
-    const currentQuestionIndex = questionNumber - 1;
-    const nextIndex = currentQuestionIndex + 1;
-    const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
-    const selectedOption = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
+    function nextQuestion(questionNumber) {
+      const currentQuestionIndex = questionNumber - 1;
+      const nextIndex = currentQuestionIndex + 1;
+      const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
+      const selectedOption = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
 
-    if (selectedOption) {
-      if (nextIndex < totalQuestions) {
-        currentQuestion = nextIndex;
+      if (selectedOption) {
+        if (nextIndex < totalQuestions) {
+          currentQuestion = nextIndex;
+          showQuestion(currentQuestion);
+        }
+      } else {
+        alert("Please select an answer before proceeding."); // Basic interactivity
+      }
+    }
+
+    function prevQuestion(questionNumber) {
+      const prevIndex = questionNumber - 2;
+      if (prevIndex >= 0) {
+        currentQuestion = prevIndex;
         showQuestion(currentQuestion);
       }
-    } else {
-      alert("Please select an answer before proceeding.");
     }
-  }
 
-  // Function to go to the previous question
-  function prevQuestion(questionNumber) {
-    const prevIndex = questionNumber - 2;
-    if (prevIndex >= 0) {
-      currentQuestion = prevIndex;
-      showQuestion(currentQuestion);
-    }
-  }
+    // Enable next/submit button when an option is selected
+    quizForm.addEventListener('change', (event) => {
+      const questionNumber = parseInt(event.target.name.substring(1));
+      const nextButton = document.getElementById(`next${questionNumber}`);
+      const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
+      const isAnswered = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
 
-  // Function to trigger confetti when the quiz is completed
-  function completeQuiz() {
-    confetti(); // Triggers confetti on completion
-  }
-
-  // When the user submits the quiz
-  quizForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    completeQuiz();
-  });
-
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDETuFmpE616V5YDOu4iPlxkn-53V2XJpg",
-    authDomain: "leadershipquiz-48036.firebaseapp.com",
-    projectId: "leadershipquiz-48036",
-    storageBucket: "leadershipquiz-48036.firebasestorage.app",
-    messagingSenderId: "606740825362",
-    appId: "1:606740825362:web:d8516fd6a13d88f5175fcb"
-  };
-
-   firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
-  // Submit quiz responses to Firebase
-  quizForm.addEventListener('submit', function (e) {
-    e.preventDefault();  // Prevent the form from submitting and causing a page reload
-
-    const formData = {};
-    const questions = quizForm.querySelectorAll('.question-container');
-
-    // Loop through each question to gather selected responses
-    questions.forEach((q, idx) => {
-      const selected = q.querySelector('input[type="radio"]:checked');
-      if (selected) {
-        formData[`question_${idx + 1}`] = {
-          response: selected.parentElement.innerText.trim(),
-          points: selected.getAttribute('data-points'),
-          traits: selected.getAttribute('data-traits')
-        };
+      if (nextButton) {
+        nextButton.disabled = !isAnswered;
+      }
+      if (questionNumber === totalQuestions && submitButton) {
+        submitButton.disabled = !isAnswered;
       }
     });
 
-    // Save responses to Firestore
-    db.collection('quiz_responses').add(formData)
-      .then(() => {
-        // Hide the quiz form and show the 'Thank You' page
-        quizForm.style.display = 'none';
-        document.getElementById('thank-you').style.display = 'block';
-        
-        // Optionally trigger confetti or any other effect after submission
-        completeQuiz();  // If you want to show confetti, call the function here.
-      })
-      .catch(error => {
-        console.error("Error saving response: ", error);
+    // Initial display
+    showQuestion(currentQuestion);
+
+    quizForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = {};
+      const questions = quizForm.querySelectorAll('.question-container');
+
+      questions.forEach((q, idx) => {
+        const selected = q.querySelector('input[type="radio"]:checked');
+        if (selected) {
+          formData[`question_${idx + 1}`] = {
+            response: selected.parentElement.innerText.trim(),
+            points: selected.getAttribute('data-points'),
+            traits: selected.getAttribute('data-traits')
+          };
+        }
       });
-  });
-</script>
+
+      db.collection('quiz_responses').add(formData)
+        .then(() => {
+          quizForm.style.display = 'none';
+          thankYouDiv.style.display = 'block';
+        })
+        .catch(error => {
+          console.error("Error saving response: ", error);
+        });
+    });
+  </script>
+
 </body>
+
 </html>
