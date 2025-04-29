@@ -439,17 +439,17 @@
     appId: "1:606740825362:web:d8516fd6a13d88f5175fcb"
   };
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
   // Submit quiz responses to Firebase
   quizForm.addEventListener('submit', function (e) {
-    e.preventDefault();
+    e.preventDefault();  // Prevent the form from submitting and causing a page reload
 
     const formData = {};
     const questions = quizForm.querySelectorAll('.question-container');
 
+    // Loop through each question to gather selected responses
     questions.forEach((q, idx) => {
       const selected = q.querySelector('input[type="radio"]:checked');
       if (selected) {
@@ -464,8 +464,12 @@
     // Save responses to Firestore
     db.collection('quiz_responses').add(formData)
       .then(() => {
+        // Hide the quiz form and show the 'Thank You' page
         quizForm.style.display = 'none';
         document.getElementById('thank-you').style.display = 'block';
+        
+        // Optionally trigger confetti or any other effect after submission
+        completeQuiz();  // If you want to show confetti, call the function here.
       })
       .catch(error => {
         console.error("Error saving response: ", error);
@@ -473,5 +477,4 @@
   });
 </script>
 </body>
-
 </html>
