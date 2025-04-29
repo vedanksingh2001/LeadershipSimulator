@@ -7,48 +7,58 @@
   <title>Leadership Personality Quiz</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <style>
+    /* Full Page Body */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
-      background: linear-gradient(135deg, #f4f6f8, #e9ecef);
-      /* Light neutral gradient background */
+      background: linear-gradient(135deg, #d4fc79, #96e6a1, #fbc2eb, #a6c1ee);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
       background-attachment: fixed;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       color: #212529;
-      /* Dark neutral text color */
       overflow: auto;
     }
 
+    /* Quiz Container with slight glass effect */
     .quiz-container {
-      background-color: rgba(255, 255, 255, 0.95);
-      /* Slightly more opaque white container */
+      background: rgba(255, 255, 255, 0.85);
       padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       width: 90%;
-      max-width: 700px;
+      max-width: 750px;
       text-align: left;
       color: #212529;
-    }
-
-    h1 {
-      color: #00c48d;
-      /* LambdaTest primary green for the main title */
-      text-align: center;
-      margin-bottom: 30px;
       animation: fadeInDown 1s ease-in-out;
     }
 
+    /* Title */
+    h1 {
+      color: #6a11cb;
+      background: linear-gradient(45deg, #6a11cb, #2575fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+    }
+
+    /* Question Headings */
     h3 {
       color: #5444f2;
-      /* LambdaTest secondary purple for question headings */
+      font-size: 1.5rem;
       margin-bottom: 15px;
     }
 
+    /* Scenario Images */
     .scenario-image {
       text-align: center;
       margin-bottom: 25px;
@@ -58,108 +68,116 @@
     .scenario-image img {
       max-width: 100%;
       height: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 
+    /* Question Container Transition */
     .question-container {
       display: none;
       opacity: 0;
-      transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
-      transform: translateY(20px);
+      transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+      transform: translateY(30px) scale(0.98);
     }
 
     .question-container.active {
       display: block;
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
 
+    /* Each Question */
     .question {
       margin-bottom: 25px;
-      padding: 20px;
-      border: 1px solid #00c48d;
-      /* LambdaTest primary green for question border */
-      border-radius: 10px;
-      background-color: #f4f6f8;
-      /* Light neutral background for question area */
+      padding: 25px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       color: #212529;
     }
 
+    /* Paragraph */
     p {
       color: #495057;
-      /* Slightly darker neutral text for paragraphs */
       margin-bottom: 15px;
-      line-height: 1.7;
+      line-height: 1.8;
     }
 
+    /* Labels (Options) */
     label {
       display: block;
-      margin-bottom: 12px;
+      margin-bottom: 15px;
       color: #212529;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      padding: 10px;
-      border-radius: 5px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.7);
     }
 
     label:hover {
       background-color: #e9ecef;
-      /* Slightly darker neutral hover on labels */
+      transform: scale(1.02);
     }
 
+    /* Radio Buttons */
     input[type="radio"] {
       margin-right: 10px;
       vertical-align: middle;
     }
 
+    /* Navigation Controls */
     .controls {
       text-align: center;
       margin-top: 30px;
     }
 
+    /* Buttons */
     button {
-      background-color: #5444f2;
-      /* LambdaTest secondary purple for buttons */
+      background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
-      padding: 12px 25px;
+      padding: 14px 28px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 18px;
-      transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+      transition: background 0.3s ease, transform 0.2s ease;
       margin: 0 10px;
     }
 
     button:hover {
-      background-color: #4033b8;
-      /* Darker shade of LambdaTest purple on hover */
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
       transform: scale(1.05);
     }
 
     button:disabled {
-      background-color: #8d99ae;
+      background: #bdbdbd;
       cursor: not-allowed;
-      transform: scale(1);
     }
 
+    /* Thank You */
     #thank-you {
       text-align: center;
       display: none;
       color: #00c48d;
-      /* LambdaTest primary green for thank you message */
       margin-top: 40px;
-      font-size: 22px;
-      animation: fadeIn 0.6s ease-in-out;
+      font-size: 26px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    /* Gradient Background Animation */
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     /* Animations */
     @keyframes fadeInDown {
       from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(-30px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
@@ -169,9 +187,8 @@
     @keyframes fadeInUp {
       from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
@@ -182,15 +199,118 @@
       from {
         opacity: 0;
       }
-
       to {
         opacity: 1;
       }
     }
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1; /* behind everything */
+      top: 0;
+      left: 0;
+      background: transparent;
+    }
+
+    #landing-screen {
+      position: relative;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #background-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      filter: brightness(0.7);
+    }
+
+    #start-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      padding: 20px 40px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration-color:#192835;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: 0.3s;
+    }
+
+    #start-button:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+    #music-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.7);
+      border: none;
+      padding: 10px 15px;
+      font-size: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    #music-toggle:hover {
+      background: rgba(255, 255, 255, 0.9);
+    }
+    #progress-container {
+      width: 100%;
+      height: 8px;
+      background-color: #e0e0e0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 999;
+    }
+
+    #progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      transition: width 0.4s ease;
+    }
+
+
   </style>
 </head>
 
 <body>
+  <!-- Landing Screen -->
+  <div id="landing-screen">
+    <video id="background-video" autoplay muted loop>
+      <source src="L&D.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <button id="start-button" onclick="startQuiz()">Start Quiz</button>
+  </div>
+  <div id="particles-js"></div>
+  <button id="music-toggle" onclick="toggleMusic()">🔊</button>
+
+  <audio id="background-music" autoplay loop>
+    <source src="Musicforbg.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+  <div id="quiz-screen" style="display: none;">
   <div class="quiz-container">
     <h1>Leadership Personality Quiz</h1>
     <form id="quiz-form">
@@ -364,11 +484,13 @@ Engagement and collaboration with Arjun are steadily declining.
 </div>
 
     </form>
-    <div id="thank-you">
-      <h2>Thank you for playing!</h2>
-    </div>
-  </div>
+     <div id="thank-you" style="display: none;">
+          <h2>🏆 Your Leadership Style:</h2>
+          <div id="badge-result" style="margin-top:20px; font-size: 1.5rem;"></div>
+        </div>
 
+      </div> <!-- closing quiz-container -->
+    </div>
   <script>
     // Your Firebase config here
     const firebaseConfig = {
@@ -399,6 +521,10 @@ Engagement and collaboration with Arjun are steadily declining.
           container.classList.add('active');
         }
       });
+      // Update Progress Bar
+      const progressBar = document.getElementById('progress-bar');
+      const progressPercent = ((index) / (totalQuestions)) * 100;
+      progressBar.style.width = `${progressPercent}%`;
       // Disable next/submit button when a new question is shown
       if (index < totalQuestions - 1) {
         nextButtons[index].disabled = true;
@@ -447,6 +573,11 @@ Engagement and collaboration with Arjun are steadily declining.
     });
 
     // Initial display
+    function startQuiz() {
+      document.getElementById('landing-screen').style.display = 'none';
+      document.getElementById('quiz-screen').style.display = 'block';
+    }
+
     showQuestion(currentQuestion);
 
     quizForm.addEventListener('submit', function (e) {
@@ -472,12 +603,132 @@ Engagement and collaboration with Arjun are steadily declining.
 })
 .then(() => {
   quizForm.style.display = 'none';
-  thankYouDiv.style.display = 'block';
+  showFinalBadge(formData);
 })
 .catch(error => {
   console.error("Error saving response: ", error);
 });
     });
+    
+  </script>
+  <script>
+  particlesJS('particles-js',
+    {
+      "particles": {
+        "number": {
+          "value": 50,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#ffffff"
+        },
+        "shape": {
+          "type": "circle",
+        },
+        "opacity": {
+          "value": 0.3,
+          "random": true
+        },
+        "size": {
+          "value": 3,
+          "random": true
+        },
+        "line_linked": {
+          "enable": false
+        },
+        "move": {
+          "enable": true,
+          "speed": 0.6,
+          "direction": "none",
+          "straight": false
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": false
+          },
+          "onclick": {
+            "enable": false
+          },
+          "resize": true
+        }
+      },
+      "retina_detect": true
+    }
+  );
+    const music = document.getElementById('background-music');
+    const musicToggle = document.getElementById('music-toggle');
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+        musicToggle.innerHTML = '🔊'; // Unmuted icon
+      } else {
+        music.pause();
+        musicToggle.innerHTML = '🔇'; // Muted icon
+      }
+    }
+    function showFinalBadge(formData) {
+      const traitCounts = {};
+
+      // Count how many times each trait appeared
+      Object.values(formData).forEach(answer => {
+        const traits = answer.traits.split(',');
+        traits.forEach(trait => {
+          trait = trait.trim();
+          if (trait) {
+            traitCounts[trait] = (traitCounts[trait] || 0) + 1;
+          }
+        });
+      });
+
+      // Find the highest trait
+      let maxTrait = null;
+      let maxCount = 0;
+      for (const trait in traitCounts) {
+        if (traitCounts[trait] > maxCount) {
+          maxTrait = trait;
+          maxCount = traitCounts[trait];
+        }
+      }
+
+      // Decide final badge name based on dominant trait
+      let badgeName = '';
+      switch (maxTrait) {
+        case 'EQ':
+          badgeName = 'The Empathetic Leader 🧠❤️';
+          break;
+        case 'COACH':
+          badgeName = 'The Coaching Leader 🧑‍🏫';
+          break;
+        case 'GROW':
+          badgeName = 'The Growth-Minded Leader 🚀';
+          break;
+        case 'POSAGG':
+          badgeName = 'The Assertive Leader 🎯';
+          break;
+        case 'EMP':
+          badgeName = 'The Supportive Leader 🤝';
+          break;
+        case 'SUP':
+          badgeName = 'The Collaborative Leader 🌟';
+          break;
+        case 'RED':
+          badgeName = 'The Action-Oriented Leader 🔥';
+          break;
+        default:
+          badgeName = 'A Balanced Leader ⚖️';
+      }
+
+      document.getElementById('badge-result').innerText = badgeName;
+      thankYouDiv.style.display = 'block';
+    }
+
   </script>
 
 </body>
