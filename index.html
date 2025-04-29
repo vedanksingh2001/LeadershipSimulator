@@ -55,7 +55,21 @@
       margin-bottom: 15px;
       font-size: 1.5em;
     }
+  .progress-container {
+      position: absolute;
+      top: 10px;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: #ddd;
+    }
 
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background-color: #5444f2;
+    }
+    
     .scenario-image {
       text-align: center;
       margin-bottom: 25px;
@@ -202,8 +216,12 @@
     <source src="freepik__background-deep-black-space-background-with-subtle__7402.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
-
   <div class="quiz-container">
+    <!-- Progress bar -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
     <h1>Leadership Personality Quiz</h1>
     <form id="quiz-form">
 
@@ -318,121 +336,184 @@
       </div>
 
     </form>
-    <div id="thank-you">
-      <h2>Thank you for playing!</h2>
-    </div>
+   <div id="thank-you">
+        <h2>Thank you for playing!</h2>
+        <div id="confetti"></div>
+      </div>
+    </form>
   </div>
 
-  <script>
-    // Set the video playback speed to slower (e.g., 0.5 for half speed)
-    const backgroundVideo = document.querySelector('.background-video');
-    backgroundVideo.playbackRate = 0.5; // Slow down the video to half speed
-    // Your Firebase config here
-    const firebaseConfig = {
-      apiKey: "AIzaSyDETuFmpE616V5YDOu4iPlxkn-53V2XJpg",
-      authDomain: "leadershipquiz-48036.firebaseapp.com",
-      projectId: "leadershipquiz-48036",
-      storageBucket: "leadershipquiz-48036.firebasestorage.app",
-      messagingSenderId: "606740825362",
-      appId: "1:606740825362:web:d8516fd6a13d88f5175fcb"
-    };
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.0/dist/confetti.browser.min.js"></script>
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+ <script>
+  // Set the video playback speed to slower (e.g., 0.5 for half speed)
+  const backgroundVideo = document.querySelector('.background-video');
+  backgroundVideo.playbackRate = 0.5; // Slow down the video to half speed
 
-    const quizForm = document.getElementById('quiz-form');
-    const questionContainers = document.querySelectorAll('.question-container');
-    const thankYouDiv = document.getElementById('thank-you');
-    let currentQuestion = 0;
-    const totalQuestions = questionContainers.length;
-    const nextButtons = document.querySelectorAll('[id^="next"]');
-    const submitButton = quizForm.querySelector('button[type="submit"]');
+  const progressBar = document.getElementById('progress-bar');
+  let currentQuestion = 0;
+  const totalQuestions = 5; // Change based on total number of questions
+  const questionContainers = document.querySelectorAll('.question-container');
 
-    function showQuestion(index) {
-      questionContainers.forEach((container, i) => {
-        container.classList.remove('active');
-        if (i === index) {
-          container.classList.add('active');
-        }
-      });
-      // Disable next/submit button when a new question is shown
-      if (index < totalQuestions - 1) {
-        nextButtons[index].disabled = true;
-      } else if (index === totalQuestions - 1) {
-        submitButton.disabled = true;
+  // Progress bar update function
+  function updateProgressBar() {
+    const progress = ((currentQuestion + 1) / totalQuestions) * 100;
+    progressBar.style.width = `${progress}%`;
+  }
+
+  function showQuestion(index) {
+    questionContainers.forEach((container, i) => {
+      container.classList.remove('active');
+      if (i === index) {
+        container.classList.add('active');
       }
-    }
+    });
+    updateProgressBar();
+  }
 
-    function nextQuestion(questionNumber) {
-      const currentQuestionIndex = questionNumber - 1;
-      const nextIndex = currentQuestionIndex + 1;
-      const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
-      const selectedOption = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
+  function nextQuestion(questionNumber) {
+    const currentQuestionIndex = questionNumber - 1;
+    const nextIndex = currentQuestionIndex + 1;
+    const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
+    const selectedOption = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
 
-      if (selectedOption) {
-        if (nextIndex < totalQuestions) {
-          currentQuestion = nextIndex;
-          showQuestion(currentQuestion);
-        }
-      } else {
-        alert("Please select an answer before proceeding."); // Basic interactivity
-      }
-    }
-
-    function prevQuestion(questionNumber) {
-      const prevIndex = questionNumber - 2;
-      if (prevIndex >= 0) {
-        currentQuestion = prevIndex;
+    if (selectedOption) {
+      if (nextIndex < totalQuestions) {
+        currentQuestion = nextIndex;
         showQuestion(currentQuestion);
       }
+    } else {
+      alert("Please select an answer before proceeding.");
     }
+  }
 
-    // Enable next/submit button when an option is selected
-    quizForm.addEventListener('change', (event) => {
-      const questionNumber = parseInt(event.target.name.substring(1));
-      const nextButton = document.getElementById(`next${questionNumber}`);
-      const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
-      const isAnswered = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
+  function prevQuestion(questionNumber) {
+    const prevIndex = questionNumber - 2;
+    if (prevIndex >= 0) {
+      currentQuestion = prevIndex;
+      showQuestion(currentQuestion);
+    }
+  }
 
-      if (nextButton) {
-        nextButton.disabled = !isAnswered;
+  // Trigger confetti when quiz is completed
+  function completeQuiz() {
+    confetti(); // Triggers confetti on completion
+  }
+
+  quizForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    completeQuiz();
+  });
+
+  // Initial display
+  showQuestion(currentQuestion);
+
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDETuFmpE616V5YDOu4iPlxkn-53V2XJpg",
+    authDomain: "leadershipquiz-48036.firebaseapp.com",
+    projectId: "leadershipquiz-48036",
+    storageBucket: "leadershipquiz-48036.firebasestorage.app",
+    messagingSenderId: "606740825362",
+    appId: "1:606740825362:web:d8516fd6a13d88f5175fcb"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const quizForm = document.getElementById('quiz-form');
+  const questionContainers = document.querySelectorAll('.question-container');
+  const thankYouDiv = document.getElementById('thank-you');
+  let currentQuestion = 0;
+  const totalQuestions = questionContainers.length;
+  const nextButtons = document.querySelectorAll('[id^="next"]');
+  const submitButton = quizForm.querySelector('button[type="submit"]');
+
+  function showQuestion(index) {
+    questionContainers.forEach((container, i) => {
+      container.classList.remove('active');
+      if (i === index) {
+        container.classList.add('active');
       }
-      if (questionNumber === totalQuestions && submitButton) {
-        submitButton.disabled = !isAnswered;
+    });
+    // Disable next/submit button when a new question is shown
+    if (index < totalQuestions - 1) {
+      nextButtons[index].disabled = true;
+    } else if (index === totalQuestions - 1) {
+      submitButton.disabled = true;
+    }
+  }
+
+  function nextQuestion(questionNumber) {
+    const currentQuestionIndex = questionNumber - 1;
+    const nextIndex = currentQuestionIndex + 1;
+    const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
+    const selectedOption = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
+
+    if (selectedOption) {
+      if (nextIndex < totalQuestions) {
+        currentQuestion = nextIndex;
+        showQuestion(currentQuestion);
+      }
+    } else {
+      alert("Please select an answer before proceeding.");
+    }
+  }
+
+  function prevQuestion(questionNumber) {
+    const prevIndex = questionNumber - 2;
+    if (prevIndex >= 0) {
+      currentQuestion = prevIndex;
+      showQuestion(currentQuestion);
+    }
+  }
+
+  // Enable next/submit button when an option is selected
+  quizForm.addEventListener('change', (event) => {
+    const questionNumber = parseInt(event.target.name.substring(1));
+    const nextButton = document.getElementById(`next${questionNumber}`);
+    const currentQuestionDiv = document.getElementById(`question${questionNumber}`);
+    const isAnswered = currentQuestionDiv.querySelector(`input[name="q${questionNumber}"]:checked`);
+
+    if (nextButton) {
+      nextButton.disabled = !isAnswered;
+    }
+    if (questionNumber === totalQuestions && submitButton) {
+      submitButton.disabled = !isAnswered;
+    }
+  });
+
+  // Initial display
+  showQuestion(currentQuestion);
+
+  quizForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const formData = {};
+    const questions = quizForm.querySelectorAll('.question-container');
+
+    questions.forEach((q, idx) => {
+      const selected = q.querySelector('input[type="radio"]:checked');
+      if (selected) {
+        formData[`question_${idx + 1}`] = {
+          response: selected.parentElement.innerText.trim(),
+          points: selected.getAttribute('data-points'),
+          traits: selected.getAttribute('data-traits')
+        };
       }
     });
 
-    // Initial display
-    showQuestion(currentQuestion);
-
-    quizForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const formData = {};
-      const questions = quizForm.querySelectorAll('.question-container');
-
-      questions.forEach((q, idx) => {
-        const selected = q.querySelector('input[type="radio"]:checked');
-        if (selected) {
-          formData[`question_${idx + 1}`] = {
-            response: selected.parentElement.innerText.trim(),
-            points: selected.getAttribute('data-points'),
-            traits: selected.getAttribute('data-traits')
-          };
-        }
+    db.collection('quiz_responses').add(formData)
+      .then(() => {
+        quizForm.style.display = 'none';
+        thankYouDiv.style.display = 'block';
+      })
+      .catch(error => {
+        console.error("Error saving response: ", error);
       });
-
-      db.collection('quiz_responses').add(formData)
-        .then(() => {
-          quizForm.style.display = 'none';
-          thankYouDiv.style.display = 'block';
-        })
-        .catch(error => {
-          console.error("Error saving response: ", error);
-        });
-    });
-  </script>
+  });
+</script>
 
 </body>
 
