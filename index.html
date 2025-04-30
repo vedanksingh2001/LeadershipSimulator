@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -228,29 +229,23 @@
       height: 100%;
       object-fit: cover;
       z-index: -1;
-      filter: brightness(0.7);
+      filter: brightness(0.8);
     }
 
     #start-button {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      padding: 20px 40px;
-      font-size: 1.5rem;
+      padding: 14px 30px;
+      font-size: 1.2rem;
       font-weight: bold;
-      text-decoration-color:#192835;
+      border: none;
       border-radius: 10px;
+      background: rgba(255, 255, 255, 0.9);
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      transition: 0.3s;
+      transition: transform 0.3s ease;
     }
 
     #start-button:hover {
       background: rgba(255, 255, 255, 1);
-      transform: translate(-50%, -50%) scale(1.05);
+      transform: scale(1.05);
     }
     #music-toggle {
       position: fixed;
@@ -286,7 +281,64 @@
       background: linear-gradient(90deg, #6a11cb, #2575fc);
       transition: width 0.4s ease;
     }
+    #logo-link {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 999;
+      text-decoration: none;
+    }
 
+    #logo {
+      height: 150px;
+      width: auto;
+      border-radius: 10px;
+
+      transition: transform 0.3s ease;
+    }
+
+    #logo:hover {
+      transform: scale(1.05);
+    }
+    #landing-content {
+      position: absolute;
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      z-index: 2;
+    }
+
+    #landing-content input {
+      padding: 12px 16px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      width: 280px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      outline: none;
+    }
+
+    #landing-content input:focus {
+      border: 2px solid #6a11cb;
+    }
+    .error-message {
+      color: #ff4d4f;
+      font-size: 0.95rem;
+      margin-top: -8px;
+      margin-bottom: 5px;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 6px 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: none;
+      text-align: center;
+    }
 
   </style>
 </head>
@@ -298,7 +350,12 @@
       <source src="L&D.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
-    <button id="start-button" onclick="startQuiz()">Start Quiz</button>
+    <div id="landing-content">
+      <input type="text" id="user-name" placeholder="Your Name">
+      <input type="email" id="user-email" placeholder="Your Email">
+       <div id="form-error" class="error-message"></div>
+      <button id="start-button" onclick="startQuiz()">Start Quiz</button>
+    </div>
   </div>
   <div id="particles-js"></div>
   <button id="music-toggle" onclick="toggleMusic()">🔊</button>
@@ -310,6 +367,9 @@
   <div id="progress-container">
     <div id="progress-bar"></div>
   </div>
+  <a href="https://www.lambdatest.com/" target="_blank" id="logo-link">
+    <img src="logo-trans.png" alt="Logo" id="logo">
+  </a>
   <div id="quiz-screen" style="display: none;">
   <div class="quiz-container">
     <h1>Leadership Personality Quiz</h1>
@@ -485,6 +545,7 @@ Engagement and collaboration with Arjun are steadily declining.
 
     </form>
      <div id="thank-you" style="display: none;">
+        <h2 id="thank-you-name"></h2>
           <h2>🏆 Your Leadership Style:</h2>
           <div id="badge-result" style="margin-top:20px; font-size: 1.5rem;"></div>
         </div>
@@ -574,6 +635,32 @@ Engagement and collaboration with Arjun are steadily declining.
 
     // Initial display
     function startQuiz() {
+      const name = document.getElementById('user-name').value.trim();
+      const email = document.getElementById('user-email').value.trim();
+      const errorDiv = document.getElementById('form-error');
+      const allowedDomain = "@lambdatest.com";
+
+      // Clear old error
+      errorDiv.style.display = 'none';
+      errorDiv.innerText = '';
+
+      if (!name || !email) {
+        errorDiv.innerText = "Please enter both your name and email.";
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (!email.toLowerCase().endsWith(allowedDomain)) {
+        errorDiv.innerText = "Only LambdaTest employees can access this quiz. Use your @lambdatest.com email.";
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      // Store name & email
+      localStorage.setItem('quizUserName', name);
+      localStorage.setItem('quizUserEmail', email);
+
+      // Show quiz
       document.getElementById('landing-screen').style.display = 'none';
       document.getElementById('quiz-screen').style.display = 'block';
     }
@@ -598,8 +685,10 @@ Engagement and collaboration with Arjun are steadily declining.
       });
 
       db.collection('quiz_responses').add({
-  responses: formData,
-  timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        name: localStorage.getItem('quizUserName'),
+        email: localStorage.getItem('quizUserEmail'),
+        responses: formData,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
 })
 .then(() => {
   quizForm.style.display = 'none';
@@ -726,6 +815,8 @@ Engagement and collaboration with Arjun are steadily declining.
       }
 
       document.getElementById('badge-result').innerText = badgeName;
+      document.getElementById('thank-you-name').innerText =
+      `Thanks for playing, ${localStorage.getItem('quizUserName')}!`;
       thankYouDiv.style.display = 'block';
     }
 
