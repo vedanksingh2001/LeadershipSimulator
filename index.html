@@ -753,6 +753,16 @@ Engagement and collaboration with Arjun are steadily declining.
   );
     const music = document.getElementById('background-music');
     const musicToggle = document.getElementById('music-toggle');
+    function toggleMusic() {
+  if (music.paused) {
+    music.play();
+    musicToggle.innerText = '🔊';
+  } else {
+    music.pause();
+    musicToggle.innerText = '🔇';
+  }
+}
+
     function showFinalBadge(formData) {
       const traitCounts = {};
 
