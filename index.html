@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -698,7 +699,7 @@ Engagement and collaboration with Arjun are steadily declining.
   console.error("Error saving response: ", error);
 });
     });
-    
+
   </script>
   <script>
   particlesJS('particles-js',
@@ -752,20 +753,9 @@ Engagement and collaboration with Arjun are steadily declining.
   );
     const music = document.getElementById('background-music');
     const musicToggle = document.getElementById('music-toggle');
-
-    function toggleMusic() {
-      if (music.paused) {
-        music.play();
-        musicToggle.innerHTML = '🔊'; // Unmuted icon
-      } else {
-        music.pause();
-        musicToggle.innerHTML = '🔇'; // Muted icon
-      }
-    }
     function showFinalBadge(formData) {
       const traitCounts = {};
 
-      // Count how many times each trait appeared
       Object.values(formData).forEach(answer => {
         const traits = answer.traits.split(',');
         traits.forEach(trait => {
@@ -776,7 +766,6 @@ Engagement and collaboration with Arjun are steadily declining.
         });
       });
 
-      // Find the highest trait
       let maxTrait = null;
       let maxCount = 0;
       for (const trait in traitCounts) {
@@ -786,38 +775,48 @@ Engagement and collaboration with Arjun are steadily declining.
         }
       }
 
-      // Decide final badge name based on dominant trait
-      let badgeName = '';
-      switch (maxTrait) {
-        case 'EQ':
-          badgeName = 'The Empathetic Leader 🧠❤️';
-          break;
-        case 'COACH':
-          badgeName = 'The Coaching Leader 🧑‍🏫';
-          break;
-        case 'GROW':
-          badgeName = 'The Growth-Minded Leader 🚀';
-          break;
-        case 'POSAGG':
-          badgeName = 'The Assertive Leader 🎯';
-          break;
-        case 'EMP':
-          badgeName = 'The Supportive Leader 🤝';
-          break;
-        case 'SUP':
-          badgeName = 'The Collaborative Leader 🌟';
-          break;
-        case 'RED':
-          badgeName = 'The Action-Oriented Leader 🔥';
-          break;
-        default:
-          badgeName = 'A Balanced Leader ⚖️';
+      const traitBadges = {
+        EQ: 'The Empathetic Leader 🧠❤️',
+        COACH: 'The Coaching Leader 🧑‍🏫',
+        GROW: 'The Growth-Minded Leader 🚀',
+        POSAGG: 'The Assertive Leader 🎯',
+        EMP: 'The Supportive Leader 🤝',
+        SUP: 'The Collaborative Leader 🌟',
+        RED: 'The Action-Oriented Leader 🔥'
+      };
+
+      const badgeName = traitBadges[maxTrait] || 'A Balanced Leader ⚖️';
+      document.getElementById('badge-result').innerText = badgeName;
+      document.getElementById('thank-you-name').innerText = `Thanks for playing, ${localStorage.getItem('quizUserName')}!`;
+
+      const improvementTips = {
+        EQ: "Practice deeper empathy — ask how people *feel*, not just what they *think*.",
+        COACH: "Try mentoring a peer or giving constructive feedback more regularly.",
+        GROW: "Promote learning by encouraging risks and reflecting on mistakes.",
+        POSAGG: "Be assertive when needed — especially in setting direction or priorities.",
+        EMP: "Spend more time checking in with teammates one-on-one.",
+        SUP: "Offer more visible support — recognize team wins and efforts.",
+        RED: "Try to lead with patience — avoid abruptness or command-style tone."
+      };
+
+      const feedbackArray = [];
+      for (const trait in improvementTips) {
+        if (!traitCounts[trait] || traitCounts[trait] <= 1) {
+          feedbackArray.push(improvementTips[trait]);
+        }
       }
 
-      document.getElementById('badge-result').innerText = badgeName;
-      document.getElementById('thank-you-name').innerText =
-      `Thanks for playing, ${localStorage.getItem('quizUserName')}!`;
+      const feedbackHTML = document.createElement("div");
+      feedbackHTML.innerHTML = `
+        <h3 style="margin-top: 25px; font-size: 1.2rem;">💡 Growth Tips for You:</h3>
+        <ul style="margin-top: 10px; line-height: 1.6;">
+          ${feedbackArray.slice(0, 3).map(tip => `<li>${tip}</li>`).join('')}
+        </ul>
+      `;
+
+      document.getElementById("thank-you").appendChild(feedbackHTML);
       thankYouDiv.style.display = 'block';
+      thankYouDiv.scrollIntoView({ behavior: 'smooth' });
     }
 
   </script>
